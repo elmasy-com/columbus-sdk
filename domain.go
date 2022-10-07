@@ -11,6 +11,7 @@ import (
 var (
 	ErrMissingAPIKey = errors.New("missing API key")
 	ErrUserBlocked   = errors.New("blocked")
+	ErrBadGateway    = errors.New("bad gateway")
 )
 
 type Domain struct {
@@ -91,6 +92,8 @@ func Insert(d string) error {
 		return nil
 	case http.StatusForbidden:
 		return ErrUserBlocked
+	case http.StatusBadGateway:
+		return ErrBadGateway
 	default:
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
