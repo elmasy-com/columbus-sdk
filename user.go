@@ -5,7 +5,7 @@ var (
 )
 
 type User struct {
-	Key   string `bson:"key"`
-	Name  string `bson:"name"`
-	Admin bool   `bson:"admin"`
+	Key   string `bson:"key" json:"key"`
+	Name  string `bson:"name" json:"name"`
+	Admin bool   `bson:"admin" json:"admin"`
 }
