@@ -29,4 +29,5 @@ var (
 	ErrGatewayTimeout = ColumbusError{"gateway timeout"}
 	ErrUserNotDeleted = ColumbusError{"user not deleted"}
 	ErrNotModified    = ColumbusError{"not modified"}
+	ErrMultipleUpdate = ColumbusError{"multiple update"}
 )
