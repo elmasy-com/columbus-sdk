@@ -27,4 +27,5 @@ var (
 	ErrNameTaken      = ColumbusError{"name is taken"}
 	ErrBadGateway     = ColumbusError{"bad gateway"}
 	ErrGatewayTimeout = ColumbusError{"gateway timeout"}
+	ErrUserNotDeleted = ColumbusError{"user not deleted"}
 )
