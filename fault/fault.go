@@ -1,0 +1,30 @@
+/*
+fault package is used to predefine common errors in across the columbus services.
+*/
+package fault
+
+type ColumbusError struct {
+	Err string `json:"error"`
+}
+
+func (e ColumbusError) Error() string {
+	return e.Err
+}
+
+var (
+	ErrNameEmpty      = ColumbusError{"name is empty"}
+	ErrDefaultUserNil = ColumbusError{"DefaultUser is nil"}
+	ErrUserNil        = ColumbusError{"user is nil"}
+	ErrMissingAPIKey  = ColumbusError{"missing API key"}
+	ErrInvalidAPIKey  = ColumbusError{"invalid API key"}
+	ErrInvalidDomain  = ColumbusError{"invalid domain"}
+	ErrPublicSuffix   = ColumbusError{"domain is a public suffix"}
+	ErrNotAdmin       = ColumbusError{"not admin"}
+	ErrMissingURI     = ColumbusError{"missing URI"}
+	ErrBlocked        = ColumbusError{"blocked"}
+	ErrNotFound       = ColumbusError{"not found"}
+	ErrUserNotFound   = ColumbusError{"user not found"}
+	ErrNameTaken      = ColumbusError{"name is taken"}
+	ErrBadGateway     = ColumbusError{"bad gateway"}
+	ErrGatewayTimeout = ColumbusError{"gateway timeout"}
+)
