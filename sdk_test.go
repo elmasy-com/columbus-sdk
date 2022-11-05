@@ -7,10 +7,11 @@ import (
 	"time"
 
 	"github.com/elmasy-com/columbus-sdk/fault"
+	"github.com/elmasy-com/columbus-sdk/user"
 )
 
 // Global test user to play with
-var TestUser User
+var TestUser user.User
 
 func TestLookup200(t *testing.T) {
 
@@ -246,7 +247,7 @@ func TestUserChangeName200(t *testing.T) {
 
 	SetURI("http://localhost:8080/")
 
-	err := TestUser.ChangeName("newtest")
+	err := ChangeName(&TestUser, "newtest")
 	if err != nil {
 		t.Fatalf("FAIL: %s\n", err)
 	}
@@ -265,7 +266,7 @@ func TestUserChangeName401(t *testing.T) {
 	tmp := TestUser.Key
 	TestUser.Key = "invalid"
 
-	err := TestUser.ChangeName("newtest")
+	err := ChangeName(&TestUser, "newtest")
 	if !errors.Is(err, fault.ErrInvalidAPIKey) {
 		t.Fatalf("FAIL: unexpected error: %s, want ErrInvalidAPIKey\n", err)
 	}
@@ -280,7 +281,7 @@ func TestUserChangeName403(t *testing.T) {
 
 	SetURI("http://localhost:8080/")
 
-	err := TestUser.ChangeName("newtest")
+	err := ChangeName(&TestUser, "newtest")
 	if !errors.Is(err, fault.ErrBlocked) {
 		t.Fatalf("FAIL: unexpected error: %s, want ErrBlocked\n", err)
 	}
@@ -294,7 +295,7 @@ func TestUserChangeName409(t *testing.T) {
 
 	SetURI("http://localhost:8080/")
 
-	err := TestUser.ChangeName(DefaultUser.Name)
+	err := ChangeName(&TestUser, DefaultUser.Name)
 	if !errors.Is(err, fault.ErrNameTaken) {
 		t.Fatalf("FAIL: unexpected error: %s, want ErrNameTaken\n", err)
 	}
@@ -308,7 +309,7 @@ func TestUserChangeKey200(t *testing.T) {
 
 	oldKey := TestUser.Key
 
-	err := TestUser.ChangeKey()
+	err := ChangeKey(&TestUser)
 	if err != nil {
 		t.Fatalf("FAIL: %s\n", err)
 	}
@@ -327,7 +328,7 @@ func TestUserChangeKey401(t *testing.T) {
 	tmp := TestUser.Key
 	TestUser.Key = "invalid"
 
-	err := TestUser.ChangeKey()
+	err := ChangeKey(&TestUser)
 	if !errors.Is(err, fault.ErrInvalidAPIKey) {
 		t.Fatalf("FAIL: unexpected error: %s, want ErrInvalidAPIKey\n", err)
 	}
@@ -341,7 +342,7 @@ func TestUserChangeKey403(t *testing.T) {
 
 	SetURI("http://localhost:8080/")
 
-	err := TestUser.ChangeKey()
+	err := ChangeKey(&TestUser)
 	if !errors.Is(err, fault.ErrBlocked) {
 		t.Fatalf("FAIL: unexpected error: %s, want ErrBlocked\n", err)
 	}
@@ -571,7 +572,7 @@ func TestUserDelete200(t *testing.T) {
 
 	SetURI("http://localhost:8080/")
 
-	err := TestUser.Delete(true)
+	err := Delete(TestUser, true)
 	if err != nil {
 		t.Fatalf("FAIL: %s\n", err)
 	}
@@ -584,7 +585,7 @@ func TestUserDelete401(t *testing.T) {
 
 	SetURI("http://localhost:8080/")
 
-	err := TestUser.Delete(true)
+	err := Delete(TestUser, true)
 	if !errors.Is(err, fault.ErrInvalidAPIKey) {
 		t.Fatalf("FAIL: unexpected error: %s, want ErrInvalidAPIKey\n", err)
 	}
@@ -596,7 +597,7 @@ func TestUserDelete403(t *testing.T) {
 
 	SetURI("http://localhost:8080/")
 
-	err := TestUser.Delete(true)
+	err := Delete(TestUser, true)
 	if !errors.Is(err, fault.ErrBlocked) {
 		t.Fatalf("FAIL: unexpected error: %s, want ErrBlocked\n", err)
 	}

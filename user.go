@@ -5,17 +5,12 @@ import (
 	"net/http"
 
 	"github.com/elmasy-com/columbus-sdk/fault"
+	"github.com/elmasy-com/columbus-sdk/user"
 )
 
-type User struct {
-	Key   string `bson:"key" json:"key"`
-	Name  string `bson:"name" json:"name"`
-	Admin bool   `bson:"admin" json:"admin"`
-}
+var DefaultUser *user.User
 
-var DefaultUser *User
-
-func (u *User) Delete(confirm bool) error {
+func Delete(u user.User, confirm bool) error {
 
 	if !confirm {
 		return fmt.Errorf("delete must be confirmed")
@@ -39,7 +34,7 @@ func (u *User) Delete(confirm bool) error {
 	return HandleResponse(resp, nil)
 }
 
-func (u *User) ChangeKey() error {
+func ChangeKey(u *user.User) error {
 
 	path := uri + "/user?key=true"
 
@@ -56,18 +51,15 @@ func (u *User) ChangeKey() error {
 	}
 	defer resp.Body.Close()
 
-	var uu User
-
-	err = HandleResponse(resp, &uu)
+	err = HandleResponse(resp, u)
 	if err != nil {
 		return err
 	}
 
-	u.Key = uu.Key
 	return nil
 }
 
-func (u *User) ChangeName(new string) error {
+func ChangeName(u *user.User, new string) error {
 
 	if new == "" {
 		return fault.ErrNameEmpty
@@ -88,14 +80,11 @@ func (u *User) ChangeName(new string) error {
 	}
 	defer resp.Body.Close()
 
-	var uu User
-
-	err = HandleResponse(resp, &uu)
+	err = HandleResponse(resp, u)
 	if err != nil {
 		return err
 	}
 
-	u.Name = uu.Name
 	return nil
 }
 
@@ -104,14 +93,14 @@ GetUser returns the user based on the API key.
 
 If key is empty, returns ErrMissingAPIKey.
 */
-func GetUser(key string) (User, error) {
+func GetUser(key string) (user.User, error) {
 
 	if key == "" {
-		return User{}, fault.ErrMissingAPIKey
+		return user.User{}, fault.ErrMissingAPIKey
 	}
 
 	var (
-		u    = User{}
+		u    = user.User{}
 		path = uri + "/user"
 	)
 
@@ -142,17 +131,17 @@ func GetDefaultUser(key string) error {
 	return err
 }
 
-func AddUser(name string, admin bool) (User, error) {
+func AddUser(name string, admin bool) (user.User, error) {
 
 	if name == "" {
-		return User{}, fault.ErrNameEmpty
+		return user.User{}, fault.ErrNameEmpty
 	}
 	if DefaultUser == nil {
-		return User{}, fault.ErrDefaultUserNil
+		return user.User{}, fault.ErrDefaultUserNil
 	}
 
 	var (
-		u    = User{}
+		u    = user.User{}
 		path = fmt.Sprintf("%s/user?name=%s&admin=%v", uri, name, admin)
 	)
 
@@ -174,13 +163,13 @@ func AddUser(name string, admin bool) (User, error) {
 	return u, err
 }
 
-func ChangeOtherUserKey(user *User) error {
+func ChangeOtherUserKey(u *user.User) error {
 
-	if user == nil {
+	if u == nil {
 		return fault.ErrUserNil
 	}
 
-	path := fmt.Sprintf("%s/user/other?username=%s&key=true", uri, user.Name)
+	path := fmt.Sprintf("%s/user/other?username=%s&key=true", uri, u.Name)
 
 	req, err := http.NewRequest("PATCH", path, nil)
 	if err != nil {
@@ -195,28 +184,24 @@ func ChangeOtherUserKey(user *User) error {
 	}
 	defer resp.Body.Close()
 
-	var u User
-
 	err = HandleResponse(resp, &u)
 	if err != nil {
 		return err
 	}
 
-	user.Key = u.Key
-
 	return nil
 }
 
-func ChangeOtherUserName(user *User, name string) error {
+func ChangeOtherUserName(u *user.User, name string) error {
 
-	if user == nil {
+	if u == nil {
 		return fault.ErrUserNil
 	}
 	if name == "" {
 		return fault.ErrNameEmpty
 	}
 
-	path := fmt.Sprintf("%s/user/other?username=%s&name=%s", uri, user.Name, name)
+	path := fmt.Sprintf("%s/user/other?username=%s&name=%s", uri, u.Name, name)
 
 	req, err := http.NewRequest("PATCH", path, nil)
 	if err != nil {
@@ -231,25 +216,21 @@ func ChangeOtherUserName(user *User, name string) error {
 	}
 	defer resp.Body.Close()
 
-	var u User
-
 	err = HandleResponse(resp, &u)
 	if err != nil {
 		return err
 	}
-
-	user.Name = u.Name
 
 	return nil
 }
 
-func ChangeOtherUserAdmin(user *User, admin bool) error {
+func ChangeOtherUserAdmin(u *user.User, admin bool) error {
 
-	if user == nil {
+	if u == nil {
 		return fault.ErrUserNil
 	}
 
-	path := fmt.Sprintf("%s/user/other?username=%s&admin=%v", uri, user.Name, admin)
+	path := fmt.Sprintf("%s/user/other?username=%s&admin=%v", uri, u.Name, admin)
 
 	req, err := http.NewRequest("PATCH", path, nil)
 	if err != nil {
@@ -264,14 +245,10 @@ func ChangeOtherUserAdmin(user *User, admin bool) error {
 	}
 	defer resp.Body.Close()
 
-	var u User
-
 	err = HandleResponse(resp, &u)
 	if err != nil {
 		return err
 	}
-
-	user.Admin = u.Admin
 
 	return nil
 }
