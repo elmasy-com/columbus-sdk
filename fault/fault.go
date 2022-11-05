@@ -13,6 +13,7 @@ func (e ColumbusError) Error() string {
 
 var (
 	ErrNameEmpty      = ColumbusError{"name is empty"}
+	ErrUserNameEmpty  = ColumbusError{"username is empty"}
 	ErrDefaultUserNil = ColumbusError{"DefaultUser is nil"}
 	ErrUserNil        = ColumbusError{"user is nil"}
 	ErrMissingAPIKey  = ColumbusError{"missing API key"}
