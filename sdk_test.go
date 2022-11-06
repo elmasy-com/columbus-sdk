@@ -10,6 +10,8 @@ import (
 	"github.com/elmasy-com/columbus-sdk/user"
 )
 
+const SLEEP_SEC = 5
+
 // Global test user to play with
 var TestUser user.User
 
@@ -24,7 +26,9 @@ func TestLookup200(t *testing.T) {
 		t.Fatalf("FAILED: %s\n", err)
 	}
 
-	t.Logf("%#v\n", subs)
+	if len(subs) < 2 {
+		t.Fatalf("FAIL: invalid number of subs for example.com: %v\n", subs)
+	}
 }
 
 func TestLookup400(t *testing.T) {
@@ -54,7 +58,7 @@ func TestLookup403(t *testing.T) {
 		t.Fatalf("FAILED: unexpected error: %s, expected ErrBlocked\n", err)
 	}
 
-	time.Sleep(10 * time.Second)
+	time.Sleep(SLEEP_SEC * time.Second)
 }
 
 func TestLookup404(t *testing.T) {
@@ -133,7 +137,7 @@ func TestInsert403(t *testing.T) {
 		t.Fatalf("FAIL: unexpected error: %s, want ErrBlocked", err)
 	}
 
-	time.Sleep(10 * time.Second)
+	time.Sleep(SLEEP_SEC * time.Second)
 }
 
 func TestGetUser200(t *testing.T) {
@@ -177,7 +181,7 @@ func TestGetUser403(t *testing.T) {
 	}
 
 	// The test server is configured for a 10 sec block time
-	time.Sleep(10 * time.Second)
+	time.Sleep(SLEEP_SEC * time.Second)
 }
 
 func TestAddUser200(t *testing.T) {
@@ -216,7 +220,7 @@ func TestAddUser401(t *testing.T) {
 	DefaultUser.Key = tmp
 }
 
-func TestAddUser403(t *testing.T) {
+func TestAddUser403Blocked(t *testing.T) {
 
 	// Test add user with blocked IP
 	SetURI("http://localhost:8080/")
@@ -226,7 +230,25 @@ func TestAddUser403(t *testing.T) {
 		t.Fatalf("FAIL: unexpected error: %s, want ErrBlocked\n", err)
 	}
 
-	time.Sleep(10 * time.Second)
+	time.Sleep(SLEEP_SEC * time.Second)
+}
+
+func TestAddUser403NotAdmin(t *testing.T) {
+
+	// Test add user with blocked IP
+	SetURI("http://localhost:8080/")
+
+	tmp := DefaultUser
+	DefaultUser = &TestUser
+
+	_, err := AddUser("test", false)
+	if !errors.Is(err, fault.ErrNotAdmin) {
+		t.Fatalf("FAIL: unexpected error: %s, want ErrNotAdmin\n", err)
+	}
+
+	DefaultUser = tmp
+
+	time.Sleep(SLEEP_SEC * time.Second)
 }
 
 func TestAddUser409(t *testing.T) {
@@ -286,7 +308,7 @@ func TestUserChangeName403(t *testing.T) {
 		t.Fatalf("FAIL: unexpected error: %s, want ErrBlocked\n", err)
 	}
 
-	time.Sleep(10 * time.Second)
+	time.Sleep(SLEEP_SEC * time.Second)
 }
 
 func TestUserChangeName409(t *testing.T) {
@@ -347,7 +369,7 @@ func TestUserChangeKey403(t *testing.T) {
 		t.Fatalf("FAIL: unexpected error: %s, want ErrBlocked\n", err)
 	}
 
-	time.Sleep(10 * time.Second)
+	time.Sleep(SLEEP_SEC * time.Second)
 }
 
 // TODO:
@@ -369,6 +391,18 @@ func TestChangeOtherUserName200(t *testing.T) {
 	}
 }
 
+func TestChangeOtherUserName400(t *testing.T) {
+
+	// Test change other user name
+
+	SetURI("http://localhost:8080/")
+
+	err := ChangeOtherUserName(&TestUser, TestUser.Name)
+	if !errors.Is(err, fault.ErrSameName) {
+		t.Fatalf("FAIL: unexpected error: %s, want ErrSameName\n", err)
+	}
+}
+
 func TestChangeOtherUserName401(t *testing.T) {
 
 	// Test change other user name with invalid API key
@@ -386,7 +420,7 @@ func TestChangeOtherUserName401(t *testing.T) {
 	DefaultUser.Key = tmp
 }
 
-func TestChangeOtherUserName403(t *testing.T) {
+func TestChangeOtherUserName403Blocked(t *testing.T) {
 
 	// Test change other user name with blocked IP
 
@@ -397,7 +431,26 @@ func TestChangeOtherUserName403(t *testing.T) {
 		t.Fatalf("FAIL: unexpected error: %s, want ErrBlocked\n", err)
 	}
 
-	time.Sleep(10 * time.Second)
+	time.Sleep(SLEEP_SEC * time.Second)
+}
+
+func TestChangeOtherUserName403NotAdmin(t *testing.T) {
+
+	// Test change other user name with blocked IP
+
+	SetURI("http://localhost:8080/")
+
+	tmp := DefaultUser
+	DefaultUser = &TestUser
+
+	err := ChangeOtherUserName(&TestUser, "test")
+	if !errors.Is(err, fault.ErrNotAdmin) {
+		t.Fatalf("FAIL: unexpected error: %s, want ErrNotAdmin\n", err)
+	}
+
+	DefaultUser = tmp
+
+	time.Sleep(SLEEP_SEC * time.Second)
 }
 
 func TestChangeOtherUserName404(t *testing.T) {
@@ -463,7 +516,7 @@ func TestChangeOtherUserKey401(t *testing.T) {
 	DefaultUser.Key = tmp
 }
 
-func TestChangeOtherUserKey403(t *testing.T) {
+func TestChangeOtherUserKey403Blocked(t *testing.T) {
 
 	// Test change other user key with blocked IP
 
@@ -474,7 +527,26 @@ func TestChangeOtherUserKey403(t *testing.T) {
 		t.Fatalf("FAIL: unexpected error: %s, want ErrBlocked\n", err)
 	}
 
-	time.Sleep(10 * time.Second)
+	time.Sleep(SLEEP_SEC * time.Second)
+}
+
+func TestChangeOtherUserKey403NotAdmin(t *testing.T) {
+
+	// Test change other user name with blocked IP
+
+	SetURI("http://localhost:8080/")
+
+	tmp := DefaultUser
+	DefaultUser = &TestUser
+
+	err := ChangeOtherUserKey(&TestUser)
+	if !errors.Is(err, fault.ErrNotAdmin) {
+		t.Fatalf("FAIL: unexpected error: %s, want ErrNotAdmin\n", err)
+	}
+
+	DefaultUser = tmp
+
+	time.Sleep(SLEEP_SEC * time.Second)
 }
 
 func TestChangeOtherUserKey404(t *testing.T) {
@@ -503,7 +575,18 @@ func TestChangeOtherUserAdmin200True(t *testing.T) {
 	if err != nil {
 		t.Fatalf("FAIL: %s\n", err)
 	}
+}
 
+func TestChangeOtherUserAdmin400(t *testing.T) {
+
+	// Test change other user admin
+
+	SetURI("http://localhost:8080/")
+
+	err := ChangeOtherUserAdmin(&TestUser, TestUser.Admin)
+	if !errors.Is(err, fault.ErrNothingToDo) {
+		t.Fatalf("FAIL: unexpected error: %s, want ErrNothingToDo\n", err)
+	}
 }
 
 func TestChangeOtherUserAdmin200False(t *testing.T) {
@@ -536,7 +619,7 @@ func TestChangeOtherUserAdmin401(t *testing.T) {
 	DefaultUser.Key = tmp
 }
 
-func TestChangeOtherUserAdmin403(t *testing.T) {
+func TestChangeOtherUserAdmin403Blocked(t *testing.T) {
 
 	// Test change other user admin with blocked IP
 
@@ -547,7 +630,26 @@ func TestChangeOtherUserAdmin403(t *testing.T) {
 		t.Fatalf("FAIL: unexpected error: %s, want ErrBlocked\n", err)
 	}
 
-	time.Sleep(10 * time.Second)
+	time.Sleep(SLEEP_SEC * time.Second)
+}
+
+func TestChangeOtherUserAdmin403NotAdmin(t *testing.T) {
+
+	// Test change other user name with blocked IP
+
+	SetURI("http://localhost:8080/")
+
+	tmp := DefaultUser
+	DefaultUser = &TestUser
+
+	err := ChangeOtherUserAdmin(&TestUser, false)
+	if !errors.Is(err, fault.ErrNotAdmin) {
+		t.Fatalf("FAIL: unexpected error: %s, want ErrNotAdmin\n", err)
+	}
+
+	DefaultUser = tmp
+
+	time.Sleep(SLEEP_SEC * time.Second)
 }
 
 func TestChangeOtherUserAdmin404(t *testing.T) {
@@ -564,6 +666,68 @@ func TestChangeOtherUserAdmin404(t *testing.T) {
 	}
 
 	TestUser.Name = "test"
+}
+
+func TestGetUsers200(t *testing.T) {
+
+	SetURI("http://localhost:8080/")
+
+	us, err := GetUsers()
+	if err != nil {
+		t.Fatalf("FAIL: %s\n", err)
+	}
+
+	if len(us) != 2 {
+		t.Fatalf("FAIL: invalid user number: %#v\n", us)
+	}
+}
+
+func TestGetUsers401(t *testing.T) {
+
+	SetURI("http://localhost:8080/")
+
+	tmp := DefaultUser.Key
+	DefaultUser.Key = "invalid"
+
+	_, err := GetUsers()
+	if !errors.Is(err, fault.ErrInvalidAPIKey) {
+		t.Fatalf("FAIL: unexpected error: %s, want ErrInvalidAPIKey\n", err)
+	}
+
+	DefaultUser.Key = tmp
+}
+
+func TestGetUsers403Blocked(t *testing.T) {
+
+	// Test IP block
+
+	SetURI("http://localhost:8080/")
+
+	_, err := GetUsers()
+	if !errors.Is(err, fault.ErrBlocked) {
+		t.Fatalf("FAIL: unexpected error: %s, want ErrBlocked\n", err)
+	}
+
+	time.Sleep(SLEEP_SEC * time.Second)
+}
+
+func TestGetUsers403NotAdmin(t *testing.T) {
+
+	// Test IP block
+
+	SetURI("http://localhost:8080/")
+
+	tmp := DefaultUser
+	DefaultUser = &TestUser
+
+	_, err := GetUsers()
+	if !errors.Is(err, fault.ErrNotAdmin) {
+		t.Fatalf("FAIL: unexpected error: %s, want ErrNotAdmin\n", err)
+	}
+
+	DefaultUser = tmp
+
+	time.Sleep(SLEEP_SEC * time.Second)
 }
 
 func TestUserDelete200(t *testing.T) {
@@ -601,4 +765,6 @@ func TestUserDelete403(t *testing.T) {
 	if !errors.Is(err, fault.ErrBlocked) {
 		t.Fatalf("FAIL: unexpected error: %s, want ErrBlocked\n", err)
 	}
+
+	time.Sleep(SLEEP_SEC * time.Second)
 }
