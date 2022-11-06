@@ -16,6 +16,8 @@ In case of 20X, v is used to unmarshal the body. If v is nil, the body is ignore
 
 Known errors:
 
+- fault.ErrNotModified -> User setting not modified
+
 - fault.ErrInvalidDomain -> Invalid domaoin sent
 
 - fault.ErrPublixSuffix -> Given domain is a public suffix
@@ -53,7 +55,7 @@ func HandleResponse(resp *http.Response, v any) error {
 		}
 		err = json.Unmarshal(body, v)
 		if err != nil {
-			return fmt.Errorf("failed to unmarshal body: %w", err)
+			return fmt.Errorf("failed to unmarshal body (\"%s\"): %w", body, err)
 		}
 		return nil
 	case 201: // Created
@@ -63,26 +65,30 @@ func HandleResponse(resp *http.Response, v any) error {
 		}
 		err = json.Unmarshal(body, v)
 		if err != nil {
-			return fmt.Errorf("failed to unmarshal body: %w", err)
+			return fmt.Errorf("failed to unmarshal body (\"%s\"): %w", body, err)
 		}
 		return nil
 	case 400: // Bad Request
 		err = json.Unmarshal(body, &e)
 		if err != nil {
-			return fmt.Errorf("failed to unmarshal body: %w", err)
+			return fmt.Errorf("failed to unmarshal body (\"%s\"): %w", body, err)
 		}
 		switch e.Error() {
 		case "invalid domain":
 			return fault.ErrInvalidDomain
 		case "domain is a public suffix":
 			return fault.ErrPublicSuffix
+		case fault.ErrSameName.Error():
+			return fault.ErrSameName
+		case fault.ErrNothingToDo.Error():
+			return fault.ErrNothingToDo
 		default:
 			return e
 		}
 	case 401: // Unauthorized
 		err = json.Unmarshal(body, &e)
 		if err != nil {
-			return fmt.Errorf("failed to unmarshal body: %w", err)
+			return fmt.Errorf("failed to unmarshal body (\"%s\"): %w", body, err)
 		}
 		switch e.Error() {
 		case "missing X-Api-Key":
@@ -95,7 +101,7 @@ func HandleResponse(resp *http.Response, v any) error {
 	case 403: // Forbidden
 		err = json.Unmarshal(body, &e)
 		if err != nil {
-			return fmt.Errorf("failed to unmarshal body: %w", err)
+			return fmt.Errorf("failed to unmarshal body (\"%s\"): %w", body, err)
 		}
 		switch e.Error() {
 		case "blocked":
@@ -108,7 +114,7 @@ func HandleResponse(resp *http.Response, v any) error {
 	case 404: // Not Found
 		err = json.Unmarshal(body, &e)
 		if err != nil {
-			return fmt.Errorf("failed to unmarshal body: %w", err)
+			return fmt.Errorf("failed to unmarshal body (\"%s\"): %w", body, err)
 		}
 		switch e.Error() {
 		case "not found":
@@ -121,7 +127,7 @@ func HandleResponse(resp *http.Response, v any) error {
 	case 409:
 		err = json.Unmarshal(body, &e)
 		if err != nil {
-			return fmt.Errorf("failed to unmarshal body: %w", err)
+			return fmt.Errorf("failed to unmarshal body (\"%s\"): %w", body, err)
 		}
 		switch e.Error() {
 		case "name is taken":
@@ -132,7 +138,7 @@ func HandleResponse(resp *http.Response, v any) error {
 	case 500: // Internal Server Error
 		err = json.Unmarshal(body, &e)
 		if err != nil {
-			return fmt.Errorf("failed to unmarshal body: %w", err)
+			return fmt.Errorf("failed to unmarshal body (\"%s\"): %w", body, err)
 		}
 		return e
 	case 502: // Bad Gateway
@@ -140,6 +146,6 @@ func HandleResponse(resp *http.Response, v any) error {
 	case 504: // Gateway Timeout
 		return fault.ErrGatewayTimeout
 	default:
-		return fmt.Errorf("unknown statuc code: %d", resp.StatusCode)
+		return fmt.Errorf("unknown status code: %d", resp.StatusCode)
 	}
 }
