@@ -31,4 +31,5 @@ var (
 	ErrUserNotDeleted = ColumbusError{"user not deleted"}
 	ErrNotModified    = ColumbusError{"not modified"}
 	ErrMultipleUpdate = ColumbusError{"multiple update"}
+	ErrSameName       = ColumbusError{"username and name are the same"}
 )
