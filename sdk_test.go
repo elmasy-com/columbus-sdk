@@ -69,7 +69,7 @@ func TestLookup404(t *testing.T) {
 
 	_, err := Lookup("exampleeeeeeeeeee.commmmmmmmmmmmmmm", true)
 	if !errors.Is(err, fault.ErrNotFound) {
-		t.Fatalf("FAILED: unexpected error: %s\n", err)
+		t.Fatalf("FAILED: unexpected error: %s, want ErrNotFound\n", err)
 	}
 }
 
@@ -90,20 +90,15 @@ func TestInsert200(t *testing.T) {
 	}
 }
 
-func TestInsert400(t *testing.T) {
+func TestInsert400InvalidDomain(t *testing.T) {
 
 	// Test insert with an invalid domain
 
 	SetURI("http://localhost:8080/")
 
-	err := GetDefaultUser(os.Getenv("COLUMBUS_API_KEY"))
-	if err != nil {
-		t.Fatalf("FAIL: GetDefaultUser(): %s\n", err)
-	}
-
-	err = Insert("example")
+	err := Insert("example")
 	if !errors.Is(err, fault.ErrInvalidDomain) {
-		t.Fatalf("FAIL: unexpected error: %s", err)
+		t.Fatalf("FAIL: unexpected error: %s, want ErrInvalidDomain", err)
 	}
 }
 
