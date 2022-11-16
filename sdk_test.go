@@ -79,7 +79,7 @@ func TestInsert200(t *testing.T) {
 
 	SetURI("http://localhost:8080/")
 
-	err := GetDefaultUser(os.Getenv("COLUMBUS_API_KEY"))
+	err := GetDefaultUser(os.Getenv("COLUMBUS_TEST_KEY"))
 	if err != nil {
 		t.Fatalf("FAIL: GetDefaultUser(): %s\n", err)
 	}
@@ -141,12 +141,12 @@ func TestGetUser200(t *testing.T) {
 
 	SetURI("http://localhost:8080/")
 
-	user, err := GetUser(os.Getenv("COLUMBUS_API_KEY"))
+	user, err := GetUser(os.Getenv("COLUMBUS_TEST_KEY"))
 	if err != nil {
 		t.Fatalf("FAIL: %s\n", err)
 	}
 
-	if user.Key != os.Getenv("COLUMBUS_API_KEY") {
+	if user.Key != os.Getenv("COLUMBUS_TEST_KEY") {
 		t.Fatalf("FAIL: ENV key and user key differs\n")
 	}
 }
@@ -185,7 +185,7 @@ func TestAddUser200(t *testing.T) {
 
 	SetURI("http://localhost:8080/")
 
-	err := GetDefaultUser(os.Getenv("COLUMBUS_API_KEY"))
+	err := GetDefaultUser(os.Getenv("COLUMBUS_TEST_KEY"))
 	if err != nil {
 		t.Fatalf("FAIL: Get user: %s\n", err)
 	}
