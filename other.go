@@ -21,6 +21,7 @@ func ChangeOtherUserKey(u *user.User) error {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
 
+	req.Header.Set("User-Agent", UserAgent)
 	req.Header.Set("X-Api-Key", DefaultUser.Key)
 
 	resp, err := http.DefaultClient.Do(req)
@@ -53,6 +54,7 @@ func ChangeOtherUserName(u *user.User, name string) error {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
 
+	req.Header.Set("User-Agent", UserAgent)
 	req.Header.Set("X-Api-Key", DefaultUser.Key)
 
 	resp, err := http.DefaultClient.Do(req)
@@ -82,6 +84,7 @@ func ChangeOtherUserAdmin(u *user.User, admin bool) error {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
 
+	req.Header.Set("User-Agent", UserAgent)
 	req.Header.Set("X-Api-Key", DefaultUser.Key)
 
 	resp, err := http.DefaultClient.Do(req)

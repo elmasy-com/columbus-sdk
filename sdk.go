@@ -10,8 +10,9 @@ import (
 )
 
 var (
-	uri = "https://columbus.elmasy.com" // Default URI
-	m   *sync.Mutex
+	UserAgent = "Columbus-SDK"                // Global User Agent for the HTPP Client
+	uri       = "https://columbus.elmasy.com" // Default URI
+	m         *sync.Mutex
 )
 
 func init() {
@@ -40,6 +41,8 @@ func Lookup(d string, full bool) ([]string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
+
+	req.Header.Set("User-Agent", UserAgent)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -70,6 +73,7 @@ func Insert(d string) error {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
 
+	req.Header.Set("User-Agent", UserAgent)
 	req.Header.Set("X-Api-Key", DefaultUser.Key)
 
 	resp, err := http.DefaultClient.Do(req)

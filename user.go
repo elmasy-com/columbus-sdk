@@ -23,6 +23,7 @@ func Delete(u user.User, confirm bool) error {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
 
+	req.Header.Set("User-Agent", UserAgent)
 	req.Header.Add("X-Api-Key", u.Key)
 
 	resp, err := http.DefaultClient.Do(req)
@@ -43,6 +44,7 @@ func ChangeKey(u *user.User) error {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
 
+	req.Header.Set("User-Agent", UserAgent)
 	req.Header.Add("X-Api-Key", u.Key)
 
 	resp, err := http.DefaultClient.Do(req)
@@ -72,6 +74,7 @@ func ChangeName(u *user.User, new string) error {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
 
+	req.Header.Set("User-Agent", UserAgent)
 	req.Header.Add("X-Api-Key", u.Key)
 
 	resp, err := http.DefaultClient.Do(req)
@@ -109,6 +112,7 @@ func GetUser(key string) (user.User, error) {
 		return u, fmt.Errorf("failed to create request: %w", err)
 	}
 
+	req.Header.Set("User-Agent", UserAgent)
 	req.Header.Set("X-Api-Key", key)
 
 	resp, err := http.DefaultClient.Do(req)
@@ -150,6 +154,7 @@ func AddUser(name string, admin bool) (user.User, error) {
 		return u, fmt.Errorf("failed to create request: %w", err)
 	}
 
+	req.Header.Set("User-Agent", UserAgent)
 	req.Header.Set("X-Api-Key", DefaultUser.Key)
 
 	resp, err := http.DefaultClient.Do(req)
@@ -176,6 +181,7 @@ func GetUsers() ([]user.User, error) {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 
+	req.Header.Set("User-Agent", UserAgent)
 	req.Header.Set("X-Api-Key", DefaultUser.Key)
 
 	resp, err := http.DefaultClient.Do(req)
