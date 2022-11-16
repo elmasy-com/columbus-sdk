@@ -16,11 +16,13 @@ In case of 20X, v is used to unmarshal the body. If v is nil, the body is ignore
 
 Known errors:
 
-- fault.ErrNotModified -> User setting not modified
-
-- fault.ErrInvalidDomain -> Invalid domaoin sent
+- fault.ErrInvalidDomain -> Invalid domain sent
 
 - fault.ErrPublixSuffix -> Given domain is a public suffix
+
+- fault.ErrSameName -> The old and the new username are the same
+
+- fault.ErrNothingToDo -> Nothing to do
 
 - fault.ErrMissingAPIKey -> API key is missing
 
@@ -28,9 +30,9 @@ Known errors:
 
 - fault.ErrBlocked -> IP blocked
 
-- fault.ErrNotAdmin -> User is not admin
-
 - fault.ErrNotFound -> The wanted resource was not found
+
+- fault.ErrNotAdmin -> User is not admin
 
 - fault.ErrNameTaken -> The desired username is taken
 
@@ -74,9 +76,9 @@ func HandleResponse(resp *http.Response, v any) error {
 			return fmt.Errorf("failed to unmarshal body (\"%s\"): %w", body, err)
 		}
 		switch e.Error() {
-		case "invalid domain":
+		case fault.ErrInvalidDomain.Error():
 			return fault.ErrInvalidDomain
-		case "domain is a public suffix":
+		case fault.ErrPublicSuffix.Error():
 			return fault.ErrPublicSuffix
 		case fault.ErrSameName.Error():
 			return fault.ErrSameName
@@ -91,9 +93,9 @@ func HandleResponse(resp *http.Response, v any) error {
 			return fmt.Errorf("failed to unmarshal body (\"%s\"): %w", body, err)
 		}
 		switch e.Error() {
-		case "missing X-Api-Key":
+		case fault.ErrMissingAPIKey.Error():
 			return fault.ErrMissingAPIKey
-		case "invalid X-Api-Key":
+		case fault.ErrInvalidAPIKey.Error():
 			return fault.ErrInvalidAPIKey
 		default:
 			return e
@@ -104,9 +106,9 @@ func HandleResponse(resp *http.Response, v any) error {
 			return fmt.Errorf("failed to unmarshal body (\"%s\"): %w", body, err)
 		}
 		switch e.Error() {
-		case "blocked":
+		case fault.ErrBlocked.Error():
 			return fault.ErrBlocked
-		case "not admin":
+		case fault.ErrNotAdmin.Error():
 			return fault.ErrNotAdmin
 		default:
 			return e
@@ -117,9 +119,9 @@ func HandleResponse(resp *http.Response, v any) error {
 			return fmt.Errorf("failed to unmarshal body (\"%s\"): %w", body, err)
 		}
 		switch e.Error() {
-		case "not found":
+		case fault.ErrNotFound.Error():
 			return fault.ErrNotFound
-		case "user not found":
+		case fault.ErrUserNotFound.Error():
 			return fault.ErrUserNotFound
 		default:
 			return e
@@ -130,7 +132,7 @@ func HandleResponse(resp *http.Response, v any) error {
 			return fmt.Errorf("failed to unmarshal body (\"%s\"): %w", body, err)
 		}
 		switch e.Error() {
-		case "name is taken":
+		case fault.ErrNameTaken.Error():
 			return fault.ErrNameTaken
 		default:
 			return e
