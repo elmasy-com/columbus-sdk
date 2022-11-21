@@ -53,12 +53,7 @@ func ChangeKey(u *user.User) error {
 	}
 	defer resp.Body.Close()
 
-	err = HandleResponse(resp, u)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return HandleResponse(resp, u)
 }
 
 func ChangeName(u *user.User, new string) error {
@@ -83,12 +78,7 @@ func ChangeName(u *user.User, new string) error {
 	}
 	defer resp.Body.Close()
 
-	err = HandleResponse(resp, u)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return HandleResponse(resp, u)
 }
 
 /*

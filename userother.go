@@ -30,12 +30,7 @@ func ChangeOtherUserKey(u *user.User) error {
 	}
 	defer resp.Body.Close()
 
-	err = HandleResponse(resp, &u)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return HandleResponse(resp, &u)
 }
 
 func ChangeOtherUserName(u *user.User, name string) error {
@@ -63,12 +58,7 @@ func ChangeOtherUserName(u *user.User, name string) error {
 	}
 	defer resp.Body.Close()
 
-	err = HandleResponse(resp, &u)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return HandleResponse(resp, &u)
 }
 
 func ChangeOtherUserAdmin(u *user.User, admin bool) error {
@@ -93,10 +83,5 @@ func ChangeOtherUserAdmin(u *user.User, admin bool) error {
 	}
 	defer resp.Body.Close()
 
-	err = HandleResponse(resp, &u)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return HandleResponse(resp, &u)
 }
