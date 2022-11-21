@@ -84,6 +84,8 @@ func HandleResponse(resp *http.Response, v any) error {
 			return fault.ErrSameName
 		case fault.ErrNothingToDo.Error():
 			return fault.ErrNothingToDo
+		case fault.ErrNameEmpty.Error():
+			return fault.ErrNameEmpty
 		default:
 			return e
 		}
@@ -126,7 +128,7 @@ func HandleResponse(resp *http.Response, v any) error {
 		default:
 			return e
 		}
-	case 409:
+	case 409: // Conflict
 		err = json.Unmarshal(body, &e)
 		if err != nil {
 			return fmt.Errorf("failed to unmarshal body (\"%s\"): %w", body, err)
