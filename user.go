@@ -10,10 +10,20 @@ import (
 
 var DefaultUser *user.User
 
+// Delete deletes the user u.
+// confirm must be true.
+// Uses u to do the query (self delete).
+//
+// Known errors:
+// ErrNotConfirmed (confirm is false), ErrMissingAPIKey (API key is missing) and
+// ErrBlocked (blocked IP),
 func Delete(u user.User, confirm bool) error {
 
 	if !confirm {
-		return fmt.Errorf("delete must be confirmed")
+		return fault.ErrNotConfirmed
+	}
+	if u.Key == "" {
+		return fault.ErrMissingAPIKey
 	}
 
 	path := uri + "/user?confirmation=true"
@@ -35,7 +45,20 @@ func Delete(u user.User, confirm bool) error {
 	return HandleResponse(resp, nil)
 }
 
+// ChangeKey generates a new API key for user u.
+// Uses u to do the query (self update).
+//
+// Known errors:
+// ErrUserNil (u is nil), ErrBlocked (blocked IP),
+// ErrMissingAPIKey (API key is missing) and ErrMissingAPIKey (invalid API key).
 func ChangeKey(u *user.User) error {
+
+	if u == nil {
+		return fault.ErrUserNil
+	}
+	if u.Key == "" {
+		return fault.ErrMissingAPIKey
+	}
 
 	path := uri + "/user/key"
 
@@ -56,8 +79,21 @@ func ChangeKey(u *user.User) error {
 	return HandleResponse(resp, u)
 }
 
+// ChangeName changes the name of u to new.
+// Uses u to do the query (self update).
+//
+// Known errors are:
+// ErrUserNil (u is nil), ErrNameEmpty (new is empty), ErrBlocked (blocked IP),
+// ErrMissingAPIKey (API key is missing), ErrInvalidAPIKey (invalid API key) and
+// ErrNameTaken (desired name is taken).
 func ChangeName(u *user.User, new string) error {
 
+	if u == nil {
+		return fault.ErrUserNil
+	}
+	if u.Key == "" {
+		return fault.ErrMissingAPIKey
+	}
 	if new == "" {
 		return fault.ErrNameEmpty
 	}
@@ -81,11 +117,11 @@ func ChangeName(u *user.User, new string) error {
 	return HandleResponse(resp, u)
 }
 
-/*
-GetUser returns the user based on the API key.
-
-If key is empty, returns ErrMissingAPIKey.
-*/
+// GetUser returns the user based on the API key.
+//
+// Known errors are:
+// ErrBlocked (blocked IP), ErrMissingAPIKey (API key is missing) and
+// ErrInvalidAPIKey (invalid API key)
 func GetUser(key string) (user.User, error) {
 
 	if key == "" {
@@ -117,6 +153,7 @@ func GetUser(key string) (user.User, error) {
 }
 
 // GetDefaultUser loads the DefaultUser variable based on the API key.
+// It uses the GetUser() function.
 func GetDefaultUser(key string) error {
 
 	u, err := GetUser(key)
@@ -125,6 +162,15 @@ func GetDefaultUser(key string) error {
 	return err
 }
 
+// AddUser create a new user.
+// Uses the DefaultUser to do the query.
+// The user must be admin!
+//
+// Known errors are:
+// ErrNameEmpty (name is empty), ErrDefaultUserNil (default user is not set),
+// ErrBlocked (blocked IP), ErrMissingAPIKey (API key is missing),
+// ErrInvalidAPIKey (invalid API key), ErrNotAdmin (DefaultUser is not admin)
+// and ErrNameTaken (desired name is taken).
 func AddUser(name string, admin bool) (user.User, error) {
 
 	if name == "" {
@@ -158,6 +204,13 @@ func AddUser(name string, admin bool) (user.User, error) {
 	return u, err
 }
 
+// GetUsers returns a list of every user in the database.
+// Uses the DefaultUser to do the query.
+//
+// Known errors:
+// ErrDefaultUserNil (DefaultUser is not set), ErrBlocked (blocked IP),
+// ErrMissingAPIKey (API key is missing), ErrInvalidAPIKey (invalid API key),
+// ErrNotAdmin (DefaultUser is not admin).
 func GetUsers() ([]user.User, error) {
 
 	if DefaultUser == nil {

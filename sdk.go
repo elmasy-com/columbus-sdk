@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/elmasy-com/columbus-sdk/fault"
+	"github.com/elmasy-com/elnet/domain"
 )
 
 var (
@@ -29,8 +30,15 @@ func SetURI(u string) {
 
 // Lookup do a lookup for given domain d.
 // If full is true, returns the full hostname.
-// For returned errors see HandleResponse().
+//
+// Known errors are:
+// ErrInvalidDomain (d is not a valid domain), ErrBlocked (blocked IP) and
+// ErrNotFound (the given domain is not found / not exist in the DB).
 func Lookup(d string, full bool) ([]string, error) {
+
+	if !domain.IsValid(d) {
+		return nil, fault.ErrInvalidDomain
+	}
 
 	path := uri + "/lookup/" + d
 	if full {
@@ -57,8 +65,17 @@ func Lookup(d string, full bool) ([]string, error) {
 	return subs, err
 }
 
+// Insert inserts d into the database.
+// Uses the DefaultUser to do the query.
+//
+// Known errors are:
+// ErrInvalidDomain (d is not a vlid domain), ErrDefaultUserNil (DefaultUser is not set),
+// ErrBlocked (blocked IP), ErrMissingAPIKey (API key is missing) and ErrInvalidAPIKey (API key is invalid).
 func Insert(d string) error {
 
+	if !domain.IsValid(d) {
+		return fault.ErrInvalidDomain
+	}
 	if DefaultUser == nil {
 		return fault.ErrDefaultUserNil
 	}
