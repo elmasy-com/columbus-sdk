@@ -103,7 +103,7 @@ func TestInsert401(t *testing.T) {
 	tmp := DefaultUser.Key
 	DefaultUser.Key = "invalid"
 
-	err := Insert("example")
+	err := Insert("example.com")
 	if !errors.Is(err, fault.ErrInvalidAPIKey) {
 		t.Fatalf("FAIL: unexpected error: %s, want ErrInvalidAPIKey", err)
 	}
@@ -118,7 +118,7 @@ func TestInsert403(t *testing.T) {
 
 	SetURI("http://localhost:8080/")
 
-	err := Insert("example")
+	err := Insert("example.com")
 	if !errors.Is(err, fault.ErrBlocked) {
 		t.Fatalf("FAIL: unexpected error: %s, want ErrBlocked", err)
 	}
@@ -381,7 +381,7 @@ func TestChangeOtherUserName401(t *testing.T) {
 	tmp := DefaultUser.Key
 	DefaultUser.Key = "invalid"
 
-	err := ChangeOtherUserName(&TestUser, "test")
+	err := ChangeOtherUserName(&TestUser, "test2")
 	if !errors.Is(err, fault.ErrInvalidAPIKey) {
 		t.Fatalf("FAIL: unexpected error: %s, want ErrInvalidAPIKey\n", err)
 	}
@@ -395,7 +395,7 @@ func TestChangeOtherUserName403Blocked(t *testing.T) {
 
 	SetURI("http://localhost:8080/")
 
-	err := ChangeOtherUserName(&TestUser, "test")
+	err := ChangeOtherUserName(&TestUser, "test2")
 	if !errors.Is(err, fault.ErrBlocked) {
 		t.Fatalf("FAIL: unexpected error: %s, want ErrBlocked\n", err)
 	}
@@ -411,7 +411,7 @@ func TestChangeOtherUserName403NotAdmin(t *testing.T) {
 	tmp := DefaultUser
 	DefaultUser = &TestUser
 
-	err := ChangeOtherUserName(&TestUser, "test")
+	err := ChangeOtherUserName(&TestUser, "test2")
 	if !errors.Is(err, fault.ErrNotAdmin) {
 		t.Fatalf("FAIL: unexpected error: %s, want ErrNotAdmin\n", err)
 	}
@@ -428,7 +428,7 @@ func TestChangeOtherUserName404(t *testing.T) {
 
 	TestUser.Name = "notexist"
 
-	err := ChangeOtherUserName(&TestUser, "test")
+	err := ChangeOtherUserName(&TestUser, "test2")
 	if !errors.Is(err, fault.ErrUserNotFound) {
 		t.Fatalf("FAIL: unexpected error: %s, want ErrUserNotFound\n", err)
 	}
@@ -560,6 +560,24 @@ func TestChangeOtherUserAdmin200False(t *testing.T) {
 	}
 }
 
+// Test change other user admin with a non admin user.
+func TestChangeOtherUserAdmin400NothingToDo(t *testing.T) {
+
+	SetURI("http://localhost:8080/")
+
+	tmp := DefaultUser
+	DefaultUser = &TestUser
+
+	err := ChangeOtherUserAdmin(&TestUser, false)
+	if !errors.Is(err, fault.ErrNothingToDo) {
+		t.Fatalf("FAIL: unexpected error: %s, want ErrNothingToDo\n", err)
+	}
+
+	DefaultUser = tmp
+
+	time.Sleep(SLEEP_SEC * time.Second)
+}
+
 // Test change other user admin with invalid API key.
 func TestChangeOtherUserAdmin401(t *testing.T) {
 
@@ -598,7 +616,7 @@ func TestChangeOtherUserAdmin403NotAdmin(t *testing.T) {
 	tmp := DefaultUser
 	DefaultUser = &TestUser
 
-	err := ChangeOtherUserAdmin(&TestUser, false)
+	err := ChangeOtherUserAdmin(&TestUser, true)
 	if !errors.Is(err, fault.ErrNotAdmin) {
 		t.Fatalf("FAIL: unexpected error: %s, want ErrNotAdmin\n", err)
 	}
