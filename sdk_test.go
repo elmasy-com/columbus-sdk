@@ -15,25 +15,20 @@ const SLEEP_SEC = 5
 // Global test user to play with
 var TestUser user.User
 
+// Test a proper lookup.
 func TestLookup200(t *testing.T) {
-
-	// Test a proper lookup
 
 	SetURI("http://localhost:8080/")
 
-	subs, err := Lookup("example.com", true)
+	_, err := Lookup("example.com", true)
 	if err != nil {
 		t.Fatalf("FAILED: %s\n", err)
 	}
-
-	if len(subs) < 2 {
-		t.Fatalf("FAIL: invalid number of subs for example.com: %v\n", subs)
-	}
 }
 
+// Test a lookup with invalid domain.
 func TestLookup400(t *testing.T) {
 
-	// Test a
 	SetURI("http://localhost:8080/")
 
 	_, err := Lookup("example", true)
@@ -42,9 +37,9 @@ func TestLookup400(t *testing.T) {
 	}
 }
 
+// Test lookup if IP is blocked.
+// The block is caused by querying an invalid API key.
 func TestLookup403(t *testing.T) {
-
-	// Test lookup if IP is blocked
 
 	SetURI("http://localhost:8080/")
 
@@ -61,9 +56,8 @@ func TestLookup403(t *testing.T) {
 	time.Sleep(SLEEP_SEC * time.Second)
 }
 
+// Test lookup with a domain that not exist.
 func TestLookup404(t *testing.T) {
-
-	// Test lookup with a domain that not exist
 
 	SetURI("http://localhost:8080/")
 
@@ -73,9 +67,8 @@ func TestLookup404(t *testing.T) {
 	}
 }
 
+// Test insert with a proper domain.
 func TestInsert200(t *testing.T) {
-
-	// Test insert with a proper domain
 
 	SetURI("http://localhost:8080/")
 
@@ -90,9 +83,8 @@ func TestInsert200(t *testing.T) {
 	}
 }
 
+// Test insert with an invalid domain.
 func TestInsert400InvalidDomain(t *testing.T) {
-
-	// Test insert with an invalid domain
 
 	SetURI("http://localhost:8080/")
 
@@ -102,9 +94,8 @@ func TestInsert400InvalidDomain(t *testing.T) {
 	}
 }
 
+// Test insert with invalid API key.
 func TestInsert401(t *testing.T) {
-
-	// Test insert with invalid API key
 
 	SetURI("http://localhost:8080/")
 
@@ -121,10 +112,10 @@ func TestInsert401(t *testing.T) {
 	DefaultUser.Key = tmp
 }
 
+// Test insert with IP blocked.
+// The previous test caused an IP block.
 func TestInsert403(t *testing.T) {
 
-	// Test insert with IP blocked
-	// The previoud test caused an IP block
 	SetURI("http://localhost:8080/")
 
 	err := Insert("example")
@@ -135,9 +126,8 @@ func TestInsert403(t *testing.T) {
 	time.Sleep(SLEEP_SEC * time.Second)
 }
 
+// Test get user with valid API key.
 func TestGetUser200(t *testing.T) {
-
-	// Test get user with valid API key
 
 	SetURI("http://localhost:8080/")
 
@@ -151,9 +141,8 @@ func TestGetUser200(t *testing.T) {
 	}
 }
 
+// Test get user with invalid API key.
 func TestGetUser401(t *testing.T) {
-
-	// Test get user with invalid API key
 
 	SetURI("http://localhost:8080/")
 
@@ -163,10 +152,9 @@ func TestGetUser401(t *testing.T) {
 	}
 }
 
-// Test 403 after an invalid key
+// Test 403 after an invalid key.
+// The previous function caused a block.
 func TestGetUser403(t *testing.T) {
-
-	// The previous function caused a block, so test get user with IP blocked and wait 10 sec
 
 	SetURI("http://localhost:8080/")
 
@@ -179,9 +167,8 @@ func TestGetUser403(t *testing.T) {
 	time.Sleep(SLEEP_SEC * time.Second)
 }
 
+// Test add user with valid datas.
 func TestAddUser200(t *testing.T) {
-
-	// Test add user with valid datas
 
 	SetURI("http://localhost:8080/")
 
@@ -198,9 +185,8 @@ func TestAddUser200(t *testing.T) {
 	TestUser = user
 }
 
+// Test add user with invalid API key.
 func TestAddUser401(t *testing.T) {
-
-	// Test add user with invalid API key
 
 	SetURI("http://localhost:8080/")
 
@@ -215,9 +201,10 @@ func TestAddUser401(t *testing.T) {
 	DefaultUser.Key = tmp
 }
 
+// Test add user with blocked IP.
+// The previous function caused a block.
 func TestAddUser403Blocked(t *testing.T) {
 
-	// Test add user with blocked IP
 	SetURI("http://localhost:8080/")
 
 	_, err := AddUser("test", false)
@@ -228,9 +215,9 @@ func TestAddUser403Blocked(t *testing.T) {
 	time.Sleep(SLEEP_SEC * time.Second)
 }
 
+// Test add user with a non admin account.
 func TestAddUser403NotAdmin(t *testing.T) {
 
-	// Test add user with blocked IP
 	SetURI("http://localhost:8080/")
 
 	tmp := DefaultUser
@@ -246,9 +233,8 @@ func TestAddUser403NotAdmin(t *testing.T) {
 	time.Sleep(SLEEP_SEC * time.Second)
 }
 
+// Test adduser with taken name.
 func TestAddUser409(t *testing.T) {
-
-	// Test adduser with taken name
 
 	SetURI("http://localhost:8080/")
 
@@ -258,9 +244,8 @@ func TestAddUser409(t *testing.T) {
 	}
 }
 
+// Test user name change with valid data.
 func TestUserChangeName200(t *testing.T) {
-
-	// Test user name change with valid data
 
 	SetURI("http://localhost:8080/")
 
@@ -274,9 +259,8 @@ func TestUserChangeName200(t *testing.T) {
 	}
 }
 
+// Test change username with invalid API key.
 func TestUserChangeName401(t *testing.T) {
-
-	// Test change username with invalid API key
 
 	SetURI("http://localhost:8080/")
 
@@ -291,10 +275,9 @@ func TestUserChangeName401(t *testing.T) {
 	TestUser.Key = tmp
 }
 
+// Test change username with invalid API key.
+// The previous test caused an IP block.
 func TestUserChangeName403(t *testing.T) {
-
-	// Test change username with invalid API key
-	// The previous test caused an IP block
 
 	SetURI("http://localhost:8080/")
 
@@ -306,9 +289,8 @@ func TestUserChangeName403(t *testing.T) {
 	time.Sleep(SLEEP_SEC * time.Second)
 }
 
+// Test change username with a taken username.
 func TestUserChangeName409(t *testing.T) {
-
-	// Test change username with a taken username
 
 	SetURI("http://localhost:8080/")
 
@@ -318,9 +300,8 @@ func TestUserChangeName409(t *testing.T) {
 	}
 }
 
+// Test user key change.
 func TestUserChangeKey200(t *testing.T) {
-
-	// Test user key change
 
 	SetURI("http://localhost:8080/")
 
@@ -336,9 +317,8 @@ func TestUserChangeKey200(t *testing.T) {
 	}
 }
 
+// Test user key change with invalid key.
 func TestUserChangeKey401(t *testing.T) {
-
-	// Test user key change with invalid key
 
 	SetURI("http://localhost:8080/")
 
@@ -353,9 +333,9 @@ func TestUserChangeKey401(t *testing.T) {
 	TestUser.Key = tmp
 }
 
+// Test user name change with blocked IP.
+// The previous test caused an IP block.
 func TestUserChangeKey403(t *testing.T) {
-
-	// Test user name change with blocked IP
 
 	SetURI("http://localhost:8080/")
 
@@ -367,12 +347,8 @@ func TestUserChangeKey403(t *testing.T) {
 	time.Sleep(SLEEP_SEC * time.Second)
 }
 
-// TODO:
-// Change other user admin
-
+// Test change other user name.
 func TestChangeOtherUserName200(t *testing.T) {
-
-	// Test change other user name
 
 	SetURI("http://localhost:8080/")
 
@@ -386,9 +362,8 @@ func TestChangeOtherUserName200(t *testing.T) {
 	}
 }
 
+// Test change other user name to the same name.
 func TestChangeOtherUserName400(t *testing.T) {
-
-	// Test change other user name
 
 	SetURI("http://localhost:8080/")
 
@@ -398,9 +373,8 @@ func TestChangeOtherUserName400(t *testing.T) {
 	}
 }
 
+// Test change other user name with invalid API key.
 func TestChangeOtherUserName401(t *testing.T) {
-
-	// Test change other user name with invalid API key
 
 	SetURI("http://localhost:8080/")
 
@@ -415,9 +389,9 @@ func TestChangeOtherUserName401(t *testing.T) {
 	DefaultUser.Key = tmp
 }
 
+// Test change other user name with blocked IP.
+// The previous test caused an IP block.
 func TestChangeOtherUserName403Blocked(t *testing.T) {
-
-	// Test change other user name with blocked IP
 
 	SetURI("http://localhost:8080/")
 
@@ -429,9 +403,8 @@ func TestChangeOtherUserName403Blocked(t *testing.T) {
 	time.Sleep(SLEEP_SEC * time.Second)
 }
 
+// Test change other user name with a non admin account.
 func TestChangeOtherUserName403NotAdmin(t *testing.T) {
-
-	// Test change other user name with blocked IP
 
 	SetURI("http://localhost:8080/")
 
@@ -448,9 +421,8 @@ func TestChangeOtherUserName403NotAdmin(t *testing.T) {
 	time.Sleep(SLEEP_SEC * time.Second)
 }
 
+// Test change other user name with an invalid username.
 func TestChangeOtherUserName404(t *testing.T) {
-
-	// Test change other user name with invalid username
 
 	SetURI("http://localhost:8080/")
 
@@ -464,9 +436,8 @@ func TestChangeOtherUserName404(t *testing.T) {
 	TestUser.Name = "test"
 }
 
+// Test change other user name with taken username.
 func TestChangeOtherUserName409(t *testing.T) {
-
-	// Test change other user name with taken username
 
 	SetURI("http://localhost:8080/")
 
@@ -476,9 +447,8 @@ func TestChangeOtherUserName409(t *testing.T) {
 	}
 }
 
+// Test change other user key.
 func TestChangeOtherUserKey200(t *testing.T) {
-
-	// Test change other user key
 
 	SetURI("http://localhost:8080/")
 
@@ -494,9 +464,8 @@ func TestChangeOtherUserKey200(t *testing.T) {
 	}
 }
 
+// Test change other user key with invalid API key.
 func TestChangeOtherUserKey401(t *testing.T) {
-
-	// Test change other user key with invalid API key
 
 	SetURI("http://localhost:8080/")
 
@@ -511,9 +480,9 @@ func TestChangeOtherUserKey401(t *testing.T) {
 	DefaultUser.Key = tmp
 }
 
+// Test change other user key with blocked IP.
+// The previous test caused an IP block.
 func TestChangeOtherUserKey403Blocked(t *testing.T) {
-
-	// Test change other user key with blocked IP
 
 	SetURI("http://localhost:8080/")
 
@@ -525,9 +494,8 @@ func TestChangeOtherUserKey403Blocked(t *testing.T) {
 	time.Sleep(SLEEP_SEC * time.Second)
 }
 
+// Test change other user name with non admin user.
 func TestChangeOtherUserKey403NotAdmin(t *testing.T) {
-
-	// Test change other user name with blocked IP
 
 	SetURI("http://localhost:8080/")
 
@@ -544,9 +512,8 @@ func TestChangeOtherUserKey403NotAdmin(t *testing.T) {
 	time.Sleep(SLEEP_SEC * time.Second)
 }
 
+// Test change other user key with invalid username.
 func TestChangeOtherUserKey404(t *testing.T) {
-
-	// Test change other user key with invalid username
 
 	SetURI("http://localhost:8080/")
 
@@ -560,9 +527,8 @@ func TestChangeOtherUserKey404(t *testing.T) {
 	TestUser.Name = "test"
 }
 
+// Test change other user admin.
 func TestChangeOtherUserAdmin200True(t *testing.T) {
-
-	// Test change other user admin
 
 	SetURI("http://localhost:8080/")
 
@@ -572,9 +538,8 @@ func TestChangeOtherUserAdmin200True(t *testing.T) {
 	}
 }
 
+// Test change other user admin with the same value.
 func TestChangeOtherUserAdmin400(t *testing.T) {
-
-	// Test change other user admin
 
 	SetURI("http://localhost:8080/")
 
@@ -584,9 +549,8 @@ func TestChangeOtherUserAdmin400(t *testing.T) {
 	}
 }
 
+// Test change other user admin to false.
 func TestChangeOtherUserAdmin200False(t *testing.T) {
-
-	// Test change other user admin
 
 	SetURI("http://localhost:8080/")
 
@@ -594,12 +558,10 @@ func TestChangeOtherUserAdmin200False(t *testing.T) {
 	if err != nil {
 		t.Fatalf("FAIL: %s\n", err)
 	}
-
 }
 
+// Test change other user admin with invalid API key.
 func TestChangeOtherUserAdmin401(t *testing.T) {
-
-	// Test change other user admin with invalid API key
 
 	SetURI("http://localhost:8080/")
 
@@ -614,9 +576,9 @@ func TestChangeOtherUserAdmin401(t *testing.T) {
 	DefaultUser.Key = tmp
 }
 
+// Test change other user admin with blocked IP.
+// The previous test caused an IP block.
 func TestChangeOtherUserAdmin403Blocked(t *testing.T) {
-
-	// Test change other user admin with blocked IP
 
 	SetURI("http://localhost:8080/")
 
@@ -628,9 +590,8 @@ func TestChangeOtherUserAdmin403Blocked(t *testing.T) {
 	time.Sleep(SLEEP_SEC * time.Second)
 }
 
+// Test change other user admin with a non admin user.
 func TestChangeOtherUserAdmin403NotAdmin(t *testing.T) {
-
-	// Test change other user name with blocked IP
 
 	SetURI("http://localhost:8080/")
 
@@ -647,9 +608,8 @@ func TestChangeOtherUserAdmin403NotAdmin(t *testing.T) {
 	time.Sleep(SLEEP_SEC * time.Second)
 }
 
+// Test change other user admin with invalid username.
 func TestChangeOtherUserAdmin404(t *testing.T) {
-
-	// Test change other user admin with invalid username
 
 	SetURI("http://localhost:8080/")
 
@@ -663,6 +623,7 @@ func TestChangeOtherUserAdmin404(t *testing.T) {
 	TestUser.Name = "test"
 }
 
+// Test get users.
 func TestGetUsers200(t *testing.T) {
 
 	SetURI("http://localhost:8080/")
@@ -677,6 +638,7 @@ func TestGetUsers200(t *testing.T) {
 	}
 }
 
+// Test get users with invalid API key.
 func TestGetUsers401(t *testing.T) {
 
 	SetURI("http://localhost:8080/")
@@ -692,9 +654,8 @@ func TestGetUsers401(t *testing.T) {
 	DefaultUser.Key = tmp
 }
 
+// Test get user with blocked IP.
 func TestGetUsers403Blocked(t *testing.T) {
-
-	// Test IP block
 
 	SetURI("http://localhost:8080/")
 
@@ -706,9 +667,8 @@ func TestGetUsers403Blocked(t *testing.T) {
 	time.Sleep(SLEEP_SEC * time.Second)
 }
 
+// Test get users with a non admin account.
 func TestGetUsers403NotAdmin(t *testing.T) {
-
-	// Test IP block
 
 	SetURI("http://localhost:8080/")
 
@@ -725,9 +685,8 @@ func TestGetUsers403NotAdmin(t *testing.T) {
 	time.Sleep(SLEEP_SEC * time.Second)
 }
 
+// Test delete user.
 func TestUserDelete200(t *testing.T) {
-
-	// Test valid delete user
 
 	SetURI("http://localhost:8080/")
 
@@ -737,10 +696,9 @@ func TestUserDelete200(t *testing.T) {
 	}
 }
 
+// Test delete user with invalid API key.
+// The user is deleted in the previous test.
 func TestUserDelete401(t *testing.T) {
-
-	// Test valid delete user with invalid API key
-	// The user is deleted in the previous test
 
 	SetURI("http://localhost:8080/")
 
@@ -750,9 +708,8 @@ func TestUserDelete401(t *testing.T) {
 	}
 }
 
+// Test delete user with blocked IP.
 func TestUserDelete403(t *testing.T) {
-
-	// Test valid delete user with invalid API key
 
 	SetURI("http://localhost:8080/")
 
