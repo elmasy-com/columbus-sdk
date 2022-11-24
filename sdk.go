@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	UserAgent = "Columbus-SDK"                // Global User Agent for the HTPP Client
+	UserAgent = "Columbus-SDK"                // Global User Agent for the HTTP Client
 	uri       = "https://columbus.elmasy.com" // Default URI
 	m         *sync.Mutex
 )
