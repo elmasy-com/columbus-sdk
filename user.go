@@ -37,7 +37,7 @@ func Delete(u user.User, confirm bool) error {
 
 func ChangeKey(u *user.User) error {
 
-	path := uri + "/user?key=true"
+	path := uri + "/user/key"
 
 	req, err := http.NewRequest("PATCH", path, nil)
 	if err != nil {
@@ -62,7 +62,7 @@ func ChangeName(u *user.User, new string) error {
 		return fault.ErrNameEmpty
 	}
 
-	path := uri + "/user?name=" + new
+	path := uri + "/user/name?name=" + new
 
 	req, err := http.NewRequest("PATCH", path, nil)
 	if err != nil {
