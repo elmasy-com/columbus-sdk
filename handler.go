@@ -40,7 +40,7 @@ Known errors:
 
 - fault.ErrGatewayTimeout -> Gateway Timeout
 */
-func HandleResponse(resp *http.Response, v any) error {
+func handleResponse(resp *http.Response, v any) error {
 
 	e := fault.ColumbusError{}
 

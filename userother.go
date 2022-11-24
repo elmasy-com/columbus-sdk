@@ -48,7 +48,7 @@ func ChangeOtherUserKey(u *user.User) error {
 	}
 	defer resp.Body.Close()
 
-	return HandleResponse(resp, &u)
+	return handleResponse(resp, &u)
 }
 
 // ChangeOtherUserName updates the name for u.
@@ -95,7 +95,7 @@ func ChangeOtherUserName(u *user.User, name string) error {
 	}
 	defer resp.Body.Close()
 
-	return HandleResponse(resp, &u)
+	return handleResponse(resp, &u)
 }
 
 // ChangeOtherUserAdmin updates the admin value for u.
@@ -138,5 +138,5 @@ func ChangeOtherUserAdmin(u *user.User, admin bool) error {
 	}
 	defer resp.Body.Close()
 
-	return HandleResponse(resp, &u)
+	return handleResponse(resp, &u)
 }

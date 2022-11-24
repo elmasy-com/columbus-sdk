@@ -60,7 +60,7 @@ func Lookup(d string, full bool) ([]string, error) {
 
 	var subs []string
 
-	err = HandleResponse(resp, &subs)
+	err = handleResponse(resp, &subs)
 
 	return subs, err
 }
@@ -99,5 +99,5 @@ func Insert(d string) error {
 	}
 	defer resp.Body.Close()
 
-	return HandleResponse(resp, nil)
+	return handleResponse(resp, nil)
 }

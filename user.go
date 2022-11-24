@@ -42,7 +42,7 @@ func Delete(u user.User, confirm bool) error {
 	}
 	defer resp.Body.Close()
 
-	return HandleResponse(resp, nil)
+	return handleResponse(resp, nil)
 }
 
 // ChangeKey generates a new API key for user u.
@@ -76,7 +76,7 @@ func ChangeKey(u *user.User) error {
 	}
 	defer resp.Body.Close()
 
-	return HandleResponse(resp, u)
+	return handleResponse(resp, u)
 }
 
 // ChangeName changes the name of u to new.
@@ -114,7 +114,7 @@ func ChangeName(u *user.User, new string) error {
 	}
 	defer resp.Body.Close()
 
-	return HandleResponse(resp, u)
+	return handleResponse(resp, u)
 }
 
 // GetUser returns the user based on the API key.
@@ -147,7 +147,7 @@ func GetUser(key string) (user.User, error) {
 	}
 	defer resp.Body.Close()
 
-	err = HandleResponse(resp, &u)
+	err = handleResponse(resp, &u)
 
 	return u, err
 }
@@ -199,7 +199,7 @@ func AddUser(name string, admin bool) (user.User, error) {
 	}
 	defer resp.Body.Close()
 
-	err = HandleResponse(resp, &u)
+	err = handleResponse(resp, &u)
 
 	return u, err
 }
@@ -235,7 +235,7 @@ func GetUsers() ([]user.User, error) {
 
 	var us []user.User
 
-	err = HandleResponse(resp, &us)
+	err = handleResponse(resp, &us)
 
 	return us, err
 }
