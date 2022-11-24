@@ -86,6 +86,8 @@ func HandleResponse(resp *http.Response, v any) error {
 			return fault.ErrNothingToDo
 		case fault.ErrNameEmpty.Error():
 			return fault.ErrNameEmpty
+		case fault.ErrConfirmMissing.Error():
+			return fault.ErrConfirmMissing
 		default:
 			return e
 		}
