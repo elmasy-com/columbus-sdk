@@ -33,5 +33,4 @@ var (
 	ErrMultipleUpdate = ColumbusError{"multiple update"}
 	ErrSameName       = ColumbusError{"username and name are the same"}
 	ErrNothingToDo    = ColumbusError{"nothing to do"}
-	ErrConfirmMissing = ColumbusError{"confirmation is missing"}
 )
