@@ -8,9 +8,53 @@ import (
 	"github.com/elmasy-com/columbus-sdk/user"
 )
 
+// GetOtherUser query and return a user based on username.
+// Uses the DefaultUser to do the query.
+// User must be admin to do that.
+//
+// Known errors:
+// ErrUserNameEmpty (username is empty),
+// ErrDefaultUserNil (DefaultUser is not set), ErrBlocked (blocked IP),
+// ErrMissingAPIKey (API key is missing), ErrInvalidAPIKey (invalid API key),
+// ErrNotAdmin (DefaultUser is not admin) and
+// ErrUserNotFound (user based on username not found).
+func GetOtherUser(username string) (user.User, error) {
+
+	if username == "" {
+		return user.User{}, fault.ErrUserNameEmpty
+	}
+	if DefaultUser == nil {
+		return user.User{}, fault.ErrDefaultUserNil
+	}
+	if DefaultUser.Key == "" {
+		return user.User{}, fault.ErrMissingAPIKey
+	}
+
+	u := user.User{}
+	path := uri + "/other?username=" + username
+
+	req, err := http.NewRequest("GET", path, nil)
+	if err != nil {
+		return u, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("User-Agent", UserAgent)
+	req.Header.Set("X-Api-Key", DefaultUser.Key)
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return u, fmt.Errorf("request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	err = handleResponse(resp, &u)
+	return u, err
+}
+
 // ChangeOtherUserKey generate a new key for u.
 // Uses the DefaultUser to do the query.
 // The key will be changed in u if no error occured.
+// User must be admin to do that.
 //
 // Known errors:
 // ErrUserNil (u is nil), ErrDefaultUserNil (DefaultUser is not set), ErrBlocked (blocked IP),
@@ -54,6 +98,7 @@ func ChangeOtherUserKey(u *user.User) error {
 // ChangeOtherUserName updates the name for u.
 // Uses the DefaultUser to do the query.
 // The name will be changed in u if no error occured.
+// User must be admin to do that.
 //
 // Known errors:
 // ErrUserNil (u is nil),ErrDefaultUserNil (DefaultUser is not set), ErrBlocked (blocked IP),
@@ -101,6 +146,7 @@ func ChangeOtherUserName(u *user.User, name string) error {
 // ChangeOtherUserAdmin updates the admin value for u.
 // Uses the DefaultUser to do the query.
 // u.Admin will be changed in u if no error occured.
+// User must be admin to do that.
 //
 // Known errors:
 // ErrUserNil (u is nil), ErrDefaultUserNil (DefaultUser is not set), ErrBlocked (blocked IP),
@@ -120,6 +166,9 @@ func ChangeOtherUserAdmin(u *user.User, admin bool) error {
 	}
 	if DefaultUser.Key == "" {
 		return fault.ErrMissingAPIKey
+	}
+	if u.Admin == admin {
+		return fault.ErrNothingToDo
 	}
 
 	path := fmt.Sprintf("%s/other/admin?username=%s&admin=%v", uri, u.Name, admin)

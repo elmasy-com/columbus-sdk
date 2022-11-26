@@ -347,6 +347,114 @@ func TestUserChangeKey403(t *testing.T) {
 	time.Sleep(SLEEP_SEC * time.Second)
 }
 
+// Test get other user.
+func TestGetOtherUser200(t *testing.T) {
+
+	SetURI("http://localhost:8080/")
+
+	u, err := GetOtherUser(TestUser.Name)
+	if err != nil {
+		t.Fatalf("FAIL: %s\n", err)
+	}
+
+	if TestUser.Admin != u.Admin {
+		t.Fatalf("FAIL: admin value differs: %v vs %v\n", TestUser.Admin, u.Admin)
+	}
+
+	if TestUser.Key != u.Key {
+		t.Fatalf("FAIL: key differs: %s vs %s\n", TestUser.Key, u.Key)
+	}
+
+	if TestUser.Name != u.Name {
+		t.Fatalf("FAIL: name differs: %s vs %s\n", TestUser.Name, u.Name)
+	}
+}
+
+// Test get other user with empty username.
+func TestGetOtherUser400(t *testing.T) {
+
+	SetURI("http://localhost:8080/")
+
+	_, err := GetOtherUser("")
+	if !errors.Is(err, fault.ErrUserNameEmpty) {
+		t.Fatalf("FAIL: %s\n", err)
+	}
+}
+
+// Test get other user with missing API key.
+func TestGetOtherUser401MissingKey(t *testing.T) {
+
+	SetURI("http://localhost:8080/")
+
+	tmp := DefaultUser.Key
+	DefaultUser.Key = ""
+
+	_, err := GetOtherUser(TestUser.Name)
+	if !errors.Is(err, fault.ErrMissingAPIKey) {
+		t.Fatalf("FAIL: %s\n", err)
+	}
+
+	DefaultUser.Key = tmp
+}
+
+// Test get other user with invalid API key.
+func TestGetOtherUser401InvalidKey(t *testing.T) {
+
+	SetURI("http://localhost:8080/")
+
+	tmp := DefaultUser.Key
+	DefaultUser.Key = "invalid"
+
+	_, err := GetOtherUser(TestUser.Name)
+	if !errors.Is(err, fault.ErrInvalidAPIKey) {
+		t.Fatalf("FAIL: %s\n", err)
+	}
+
+	DefaultUser.Key = tmp
+}
+
+// Test get other user with missing API key.
+// The previous tets caused the block.
+func TestGetOtherUser403Blocked(t *testing.T) {
+
+	SetURI("http://localhost:8080/")
+
+	_, err := GetOtherUser(TestUser.Name)
+	if !errors.Is(err, fault.ErrBlocked) {
+		t.Fatalf("FAIL: %s\n", err)
+	}
+
+	time.Sleep(SLEEP_SEC * time.Second)
+}
+
+// Test get other user with non admin user.
+func TestGetOtherUser403NotAdmin(t *testing.T) {
+
+	SetURI("http://localhost:8080/")
+
+	tmp := DefaultUser
+	DefaultUser = &TestUser
+
+	_, err := GetOtherUser(TestUser.Name)
+	if !errors.Is(err, fault.ErrNotAdmin) {
+		t.Fatalf("FAIL: %s\n", err)
+	}
+
+	DefaultUser = tmp
+	time.Sleep(SLEEP_SEC * time.Second)
+}
+
+// Test get other user with non admin user.
+func TestGetOtherUser404(t *testing.T) {
+
+	SetURI("http://localhost:8080/")
+
+	_, err := GetOtherUser("notexist")
+	if !errors.Is(err, fault.ErrUserNotFound) {
+		t.Fatalf("FAIL: %s\n", err)
+	}
+}
+
 // Test change other user name.
 func TestChangeOtherUserName200(t *testing.T) {
 
