@@ -112,14 +112,14 @@ func ChangeOtherUserAdmin(u *user.User, admin bool) error {
 	if u == nil {
 		return fault.ErrUserNil
 	}
+	if u.Name == "" {
+		return fault.ErrUserNameEmpty
+	}
 	if DefaultUser == nil {
 		return fault.ErrDefaultUserNil
 	}
 	if DefaultUser.Key == "" {
 		return fault.ErrMissingAPIKey
-	}
-	if u.Admin == admin {
-		return fault.ErrNothingToDo
 	}
 
 	path := fmt.Sprintf("%s/other/admin?username=%s&admin=%v", uri, u.Name, admin)
