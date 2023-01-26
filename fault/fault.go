@@ -35,4 +35,5 @@ var (
 	ErrNothingToDo    = ColumbusError{"nothing to do"}
 	ErrConfirmMissing = ColumbusError{"confirmation is missing"}
 	ErrNotConfirmed   = ColumbusError{"not confirmed"}
+	ErrDataBase       = ColumbusError{"Database error"}
 )
