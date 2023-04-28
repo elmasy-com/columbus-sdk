@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	sdk "github.com/elmasy-com/columbus-sdk"
 	"github.com/elmasy-com/columbus-sdk/fault"
@@ -60,16 +59,10 @@ func Lookup(d string) ([]string, error) {
 
 // TLD query the DB and returns a list of TLDs for the given domain d.
 //
-// If d has a subdomain, removes it before the query.
+// Domain d must be a valid Second Level Domain (eg.: "example").
 //
-// If d is invalid return fault.ErrInvalidDomain.
+// NOTE: This function not validate adn Clean() d!
 func TLD(d string) ([]string, error) {
-
-	if !eldomain.IsValid(d) || strings.ContainsRune(d, '.') {
-		return nil, fault.ErrInvalidDomain
-	}
-
-	d = eldomain.Clean(d)
 
 	// Use Find() to find every shard of the domain
 	cursor, err := Domains.Find(context.TODO(), bson.M{"domain": d})
