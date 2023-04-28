@@ -4,21 +4,26 @@ import "strings"
 
 type Domain struct {
 	Domain string   `bson:"domain" json:"domain"`
+	TLD    string   `bson:"tld" json:"tld"`
 	Shard  int      `bson:"shard" json:"shard"`
 	Subs   []string `bson:"subs" json:"subs"`
 }
 
 // GetFull resturns the hostnames as a slice of string.
-// If Subs is empty returns nil (theoretically impossible).
+// If Subs, Domain or TLD is empty returns nil.
 func (d *Domain) GetFull() []string {
 
-	var list []string
+	var list []string = nil
+
+	if d.Domain == "" || d.TLD == "" {
+		return nil
+	}
 
 	for i := range d.Subs {
 		if d.Subs[i] == "" {
-			list = append(list, d.Domain)
+			list = append(list, strings.Join([]string{d.Domain, d.TLD}, "."))
 		} else {
-			list = append(list, strings.Join([]string{d.Subs[i], d.Domain}, "."))
+			list = append(list, strings.Join([]string{d.Subs[i], d.Domain, d.TLD}, "."))
 		}
 	}
 
