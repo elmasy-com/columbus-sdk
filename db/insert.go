@@ -5,24 +5,30 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/elmasy-com/columbus-sdk/fault"
 	"github.com/elmasy-com/elnet/domain"
+	"github.com/elmasy-com/elnet/valid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // Insert insert the given domain d to the database.
-// Firstly, checks if d is valid. Then split into sub|domain parts.
+// Firstly, checks if d is valid. Then split into sub|domain|tld parts.
 // Sharding means, if the document is reached the 16MB limit increase the "shard" field by one.
 //
 // If domain is invalid, returns fault.ErrInvalidDomain.
 func Insert(d string) error {
 
-	p, err := domain.GetParts(d)
-	if err != nil {
-		return err
+	if !valid.Domain(d) {
+		return fault.ErrInvalidDomain
 	}
 
-	dom := p.GetDomain()
+	d = domain.Clean(d)
+
+	p := domain.GetParts(d)
+	if p == nil || p.Domain == "" || p.TLD == "" {
+		return fmt.Errorf("failed to get parts: %s", d)
+	}
 
 	shard := 0
 
@@ -35,7 +41,7 @@ func Insert(d string) error {
 
 	for {
 
-		filter := bson.D{{Key: "domain", Value: dom}, {Key: "shard", Value: shard}}
+		filter := bson.D{{Key: "domain", Value: p.Domain}, {Key: "tld", Value: p.TLD}, {Key: "shard", Value: shard}}
 		update := bson.D{{Key: "$addToSet", Value: bson.M{"subs": p.Sub}}}
 		opts := options.Update().SetUpsert(true)
 

@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/elmasy-com/columbus-sdk/domain"
 	"github.com/elmasy-com/columbus-sdk/fault"
@@ -12,22 +11,25 @@ import (
 )
 
 // Lookup query the DB and returns a list subdomains.
+//
+// If d has a subdomain, removes it before the query.
+//
 // If d is invalid return fault.ErrInvalidDomain.
 func Lookup(d string) ([]string, error) {
-
-	// Use Find() to find every shard of the domain
 
 	if !eldomain.IsValid(d) {
 		return nil, fault.ErrInvalidDomain
 	}
 
-	d = strings.ToLower(d)
-	d = eldomain.GetDomain(d)
-	if d == "" {
+	d = eldomain.Clean(d)
+
+	p := eldomain.GetParts(d)
+	if p == nil || p.Domain == "" {
 		return nil, fault.ErrInvalidDomain
 	}
 
-	cursor, err := Domains.Find(context.TODO(), bson.M{"domain": d})
+	// Use Find() to find every shard of the domain
+	cursor, err := Domains.Find(context.TODO(), bson.M{"domain": p.Domain, "tld": p.TLD})
 	if err != nil {
 		return nil, fmt.Errorf("failed to find: %s", err)
 	}
