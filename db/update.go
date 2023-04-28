@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	sdkdomain "github.com/elmasy-com/columbus-sdk/domain"
+	sdk "github.com/elmasy-com/columbus-sdk"
 	"github.com/elmasy-com/elnet/domain"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -20,7 +20,7 @@ func Update() error {
 	}
 	defer cursor.Close(context.TODO())
 
-	var d sdkdomain.Domain
+	var d sdk.Domain
 
 	for cursor.Next(context.TODO()) {
 

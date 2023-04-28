@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/elmasy-com/columbus-sdk/domain"
+	sdk "github.com/elmasy-com/columbus-sdk"
 	"github.com/elmasy-com/columbus-sdk/fault"
 	eldomain "github.com/elmasy-com/elnet/domain"
 	"go.mongodb.org/mongo-driver/bson"
@@ -39,7 +39,7 @@ func Lookup(d string) ([]string, error) {
 
 	for cursor.Next(context.TODO()) {
 
-		var r domain.Domain
+		var r sdk.Domain
 
 		err = cursor.Decode(&r)
 		if err != nil {
