@@ -8,6 +8,8 @@ github.com/elmasy-com/elnet v0.0.0-20230126172936-9f4b29d0e9a6 h1:JsFfj7qnc8Gwkr
 github.com/elmasy-com/elnet v0.0.0-20230126172936-9f4b29d0e9a6/go.mod h1:SWE9GOZpMzpb7KSr1BVivUZ14sWOg9OoUxAPhmPqh9M=
 github.com/elmasy-com/elnet v0.0.0-20230428001835-2229fa9249ac h1:L8eEz8iQpnC7tUJ7Qi/FrhOvjQAUfTag6rJaM4lq604=
 github.com/elmasy-com/elnet v0.0.0-20230428001835-2229fa9249ac/go.mod h1:pKPJa7uobkPUgGlRs6Apta1H2S4zPHQpv75HLkaptiI=
+github.com/elmasy-com/slices v0.0.0-20230207195255-fd5719a026da h1:jb9Bm+kX+W1ZEe/pPzVP45URQx1WQjM+VHBgJO3EvUM=
+github.com/elmasy-com/slices v0.0.0-20230207195255-fd5719a026da/go.mod h1:0DO/qXOgrnrXU44i+9JQzusxxxx6WPPW7WQeV/RJLLM=
 github.com/golang/snappy v0.0.1/go.mod h1:/XxbfmMg8lxefKM7IXC3fBNl/7bRcc72aCRzEWrmP2Q=
 github.com/golang/snappy v0.0.4 h1:yAGX7huGHXlcLOEtBnF4w7FQwA26wojNCwOYAEhLjQM=
 github.com/golang/snappy v0.0.4/go.mod h1:/XxbfmMg8lxefKM7IXC3fBNl/7bRcc72aCRzEWrmP2Q=
