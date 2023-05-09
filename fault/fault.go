@@ -36,4 +36,5 @@ var (
 	ErrConfirmMissing = ColumbusError{"confirmation is missing"}
 	ErrNotConfirmed   = ColumbusError{"not confirmed"}
 	ErrDataBase       = ColumbusError{"Database error"}
+	ErrGetPartsFailed = ColumbusError{"GetParts() failed"}
 )

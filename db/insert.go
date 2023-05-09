@@ -17,6 +17,7 @@ import (
 // Sharding means, if the document is reached the 16MB limit increase the "shard" field by one.
 //
 // If domain is invalid, returns fault.ErrInvalidDomain.
+// If failed to get parts of d (eg.: d is a TLD), returns ault.ErrGetPartsFailed.
 func Insert(d string) error {
 
 	if !valid.Domain(d) {
@@ -27,7 +28,7 @@ func Insert(d string) error {
 
 	p := domain.GetParts(d)
 	if p == nil || p.Domain == "" || p.TLD == "" {
-		return fmt.Errorf("failed to get parts: %s", d)
+		return fault.ErrGetPartsFailed
 	}
 
 	shard := 0
