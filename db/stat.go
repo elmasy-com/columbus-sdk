@@ -31,7 +31,7 @@ func getUniqueFullDomainsNum() (int64, error) {
 
 func getUniqueSubsNum() (int64, error) {
 
-	n, err := UniqueFullDomains.CountDocuments(context.TODO(), bson.M{})
+	n, err := UniqueSubs.CountDocuments(context.TODO(), bson.M{})
 
 	return int64(n), err
 }
