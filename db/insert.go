@@ -28,7 +28,7 @@ func Insert(d string) error {
 		return fault.ErrGetPartsFailed
 	}
 
-	doc := bson.D{{Key: "tld", Value: p.TLD}, {Key: "domain", Value: p.Domain}, {Key: "sub", Value: p.Sub}}
+	doc := bson.D{{Key: "domain", Value: p.Domain}, {Key: "tld", Value: p.TLD}, {Key: "sub", Value: p.Sub}}
 
 	_, err := Domains.UpdateOne(context.TODO(), doc, bson.M{"$setOnInsert": doc}, options.Update().SetUpsert(true))
 	if err != nil {
