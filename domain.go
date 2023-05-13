@@ -16,3 +16,8 @@ func (d *Domain) String() string {
 		return strings.Join([]string{d.Sub, d.Domain, d.TLD}, ".")
 	}
 }
+
+// Returns the domain+tld.
+func (d *Domain) FullDomain() string {
+	return strings.Join([]string{d.Domain, d.TLD}, ".")
+}

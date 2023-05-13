@@ -7,27 +7,67 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// TODO: This is not the real domains nummber
-func getDomains() (int64, error) {
+// Count the documents in the uniqueTlds collection
+func getUniqueTldsNum() (int64, error) {
 
-	domains, err := Domains.Distinct(context.TODO(), "domain", bson.M{})
+	n, err := UniqueTlds.CountDocuments(context.TODO(), bson.M{})
 
-	return int64(len(domains)), err
+	return int64(n), err
+}
+
+func getUniqueDomainsNum() (int64, error) {
+
+	n, err := UniqueDomains.CountDocuments(context.TODO(), bson.M{})
+
+	return int64(n), err
+}
+
+func getUniqueFullDomainsNum() (int64, error) {
+
+	n, err := UniqueFullDomains.CountDocuments(context.TODO(), bson.M{})
+
+	return int64(n), err
+}
+
+func getUniqueSubsNum() (int64, error) {
+
+	n, err := UniqueFullDomains.CountDocuments(context.TODO(), bson.M{})
+
+	return int64(n), err
 }
 
 func getTotal() (int64, error) {
 	return Domains.CountDocuments(context.TODO(), bson.M{})
 }
 
-// GetStat resturns the total number of domains (d), the total number of subdomains (s) and the error (if any).
-func GetStat() (d int64, s int64, err error) {
+// GetStat returns the total number of domains, the total number of unique TLDs, the total number of unique domains,
+// the total number of unique full domains and the total number of subdomains and the error (if any).
+func GetStat() (total, tlds, domains, fullDomain, subs int64, err error) {
 
-	d, err = getDomains()
+	total, err = getTotal()
 	if err != nil {
-		return 0, 0, fmt.Errorf("failed to get domains(): %w", err)
+		return 0, 0, 0, 0, 0, fmt.Errorf("failed to get total: %w", err)
 	}
 
-	s, err = getTotal()
+	tlds, err = getUniqueTldsNum()
+	if err != nil {
+		return 0, 0, 0, 0, 0, fmt.Errorf("failed to get unique TLDs: %w", err)
+	}
 
-	return d, s, err
+	domains, err = getUniqueDomainsNum()
+	if err != nil {
+		return 0, 0, 0, 0, 0, fmt.Errorf("failed to get unique domains: %w", err)
+	}
+
+	fullDomain, err = getUniqueFullDomainsNum()
+	if err != nil {
+		return 0, 0, 0, 0, 0, fmt.Errorf("failed to get unique full domains: %w", err)
+	}
+
+	subs, err = getUniqueSubsNum()
+	if err != nil {
+		return 0, 0, 0, 0, 0, fmt.Errorf("failed to get unique subdomains: %w", err)
+	}
+
+	return total, tlds, domains, fullDomain, subs, err
 }

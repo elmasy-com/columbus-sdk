@@ -9,8 +9,14 @@ import (
 )
 
 var (
-	Client  *mongo.Client
+	Client *mongo.Client
+
 	Domains *mongo.Collection
+
+	UniqueTlds        *mongo.Collection
+	UniqueDomains     *mongo.Collection
+	UniqueFullDomains *mongo.Collection
+	UniqueSubs        *mongo.Collection
 )
 
 // Connect connects to the database using the standard Connection URI.
@@ -29,6 +35,10 @@ func Connect(uri string) error {
 	}
 
 	Domains = Client.Database("columbus").Collection("domains")
+	UniqueTlds = Client.Database("columbus").Collection("uniqueTlds")
+	UniqueDomains = Client.Database("columbus").Collection("uniqueDomains")
+	UniqueFullDomains = Client.Database("columbus").Collection("uniqueFullDomains")
+	UniqueSubs = Client.Database("columbus").Collection("uniqueSubs")
 
 	return nil
 }
