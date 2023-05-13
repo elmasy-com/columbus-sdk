@@ -6,7 +6,7 @@ import (
 
 	sdk "github.com/elmasy-com/columbus-sdk"
 	"github.com/elmasy-com/columbus-sdk/fault"
-	eldomain "github.com/elmasy-com/elnet/domain"
+	"github.com/elmasy-com/elnet/domain"
 	"github.com/elmasy-com/slices"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -16,17 +16,18 @@ import (
 // If d has a subdomain, removes it before the query.
 //
 // If d is invalid return fault.ErrInvalidDomain.
+// If failed to get parts of d (eg.: d is a TLD), returns ault.ErrGetPartsFailed.
 func Lookup(d string) ([]string, error) {
 
-	if !eldomain.IsValid(d) {
+	if !domain.IsValid(d) {
 		return nil, fault.ErrInvalidDomain
 	}
 
-	d = eldomain.Clean(d)
+	d = domain.Clean(d)
 
-	p := eldomain.GetParts(d)
-	if p == nil || p.Domain == "" {
-		return nil, fault.ErrInvalidDomain
+	p := domain.GetParts(d)
+	if p == nil || p.Domain == "" || p.TLD == "" {
+		return nil, fault.ErrGetPartsFailed
 	}
 
 	// Use Find() to find every shard of the domain
@@ -47,7 +48,7 @@ func Lookup(d string) ([]string, error) {
 			return nil, fmt.Errorf("failed to decode: %s", err)
 		}
 
-		subs = append(subs, r.Subs...)
+		subs = append(subs, r.Sub)
 	}
 
 	if err := cursor.Err(); err != nil {

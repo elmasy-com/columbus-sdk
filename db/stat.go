@@ -4,35 +4,30 @@ import (
 	"context"
 	"fmt"
 
-	sdk "github.com/elmasy-com/columbus-sdk"
 	"go.mongodb.org/mongo-driver/bson"
 )
+
+// TODO: This is not the real domains nummber
+func getDomains() (int64, error) {
+
+	domains, err := Domains.Distinct(context.TODO(), "domain", bson.M{})
+
+	return int64(len(domains)), err
+}
+
+func getTotal() (int64, error) {
+	return Domains.CountDocuments(context.TODO(), bson.M{})
+}
 
 // GetStat resturns the total number of domains (d), the total number of subdomains (s) and the error (if any).
 func GetStat() (d int64, s int64, err error) {
 
-	var dom sdk.Domain
-
-	cursor, err := Domains.Find(context.TODO(), bson.D{})
+	d, err = getDomains()
 	if err != nil {
-		return d, s, fmt.Errorf("find() failed: %w", err)
-	}
-	defer cursor.Close(context.TODO())
-
-	for cursor.Next(context.TODO()) {
-
-		err = cursor.Decode(&dom)
-		if err != nil {
-			return d, s, fmt.Errorf("decode() failed: %w", err)
-		}
-
-		d += 1
-		s += int64(len(dom.Subs))
+		return 0, 0, fmt.Errorf("failed to get domains(): %w", err)
 	}
 
-	if err := cursor.Err(); err != nil {
-		return d, s, fmt.Errorf("cursor failed: %w", err)
-	}
+	s, err = getTotal()
 
-	return d, s, nil
+	return d, s, err
 }
