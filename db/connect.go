@@ -35,10 +35,6 @@ func Connect(uri string) error {
 	}
 
 	Domains = Client.Database("columbus").Collection("domains")
-	UniqueTlds = Client.Database("columbus").Collection("uniqueTlds")
-	UniqueDomains = Client.Database("columbus").Collection("uniqueDomains")
-	UniqueFullDomains = Client.Database("columbus").Collection("uniqueFullDomains")
-	UniqueSubs = Client.Database("columbus").Collection("uniqueSubs")
 
 	return nil
 }
