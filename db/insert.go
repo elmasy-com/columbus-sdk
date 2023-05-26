@@ -10,30 +10,29 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// Insert insert the given domain d to the database.
-// Firstly, checks if d is valid. Then split into sub|domain|tld parts.
+// Insert inserts the given domain d to the *domains* database.
+// Checks if d is valid, do a Clean() and then splits into sub|domain|tld parts.
 //
+// Returns true if d is new and inserted into the database.
 // If domain is invalid, returns fault.ErrInvalidDomain.
 // If failed to get parts of d (eg.: d is a TLD), returns ault.ErrGetPartsFailed.
-func Insert(d string) error {
+func Insert(d string) (bool, error) {
 
 	if !valid.Domain(d) {
-		return fault.ErrInvalidDomain
+		return false, fault.ErrInvalidDomain
 	}
 
 	d = domain.Clean(d)
 
 	p := domain.GetParts(d)
 	if p == nil || p.Domain == "" || p.TLD == "" {
-		return fault.ErrGetPartsFailed
+		return false, fault.ErrGetPartsFailed
 	}
 
 	doc := bson.D{{Key: "domain", Value: p.Domain}, {Key: "tld", Value: p.TLD}, {Key: "sub", Value: p.Sub}}
 
-	_, err := Domains.UpdateOne(context.TODO(), doc, bson.M{"$setOnInsert": doc}, options.Update().SetUpsert(true))
-	if err != nil {
-		return err
-	}
+	// UpdateOne will insert the document with $setOnInsert + upsert or do nothing
+	res, err := Domains.UpdateOne(context.TODO(), doc, bson.M{"$setOnInsert": doc}, options.Update().SetUpsert(true))
 
-	return nil
+	return res.UpsertedCount != 0, err
 }
